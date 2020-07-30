@@ -3,6 +3,7 @@
 @import "./styles/Header.css";
 @import "./styles/Main.css";
 @import "./styles/SatSetting.css";
+@import "./styles/SatelliteList.css";
 @import "./styles/Footer.css";
 
 body {
@@ -10,6 +11,8 @@ body {
   font-family: 'Raleway', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  height: 100%;
 }
 
 a {

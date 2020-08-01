@@ -10,6 +10,7 @@ class Main extends React.Component {
   state = {
     satInfo: null,
     settings: null,
+    selectedSats: [],
     isLoadingList: false
   }
 
@@ -43,11 +44,14 @@ class Main extends React.Component {
   }
 
   showOnMap = (selectedSats) => {
-    console.log(selectedSats);
+    this.setState(prevState => ({
+      ...prevState, // is this needed?
+      selectedSats: [...selectedSats]
+    }));
   }
 
   render() {
-    const {satInfo} = this.state;
+    const {satInfo, selectedSats, settings} = this.state;
 
     return (
       <div className="main">
@@ -56,7 +60,7 @@ class Main extends React.Component {
           <SatList satInfo={satInfo} isLoading={this.state.isLoadingList} showOnMap={this.showOnMap}/>
         </div>
         <div className="right-side">
-          <WordMap />
+          <WordMap selectedSats={selectedSats} settings={settings}/>
         </div>
       </div>
     );

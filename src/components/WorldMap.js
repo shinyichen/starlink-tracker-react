@@ -39,14 +39,14 @@ class WordMap extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.selectedSats !== this.props.selectedSats) {
-      const { observerLat, observerLon, duration } = this.props.settings;
-      const startTime = duration[0] * 60; // speed up 60x
+      const { observerLat, observerLon, observerElevation, duration } = this.props.settings;
+      // speed up 60x
       const endTime = duration[1] * 60;
 
       // fetch urls for each sat (list or promises)
       const urls = this.props.selectedSats.map( sat => {
         const { satid } = sat;
-        const url = `${SATELLITE_POSITION_URL}/${satid}/${observerLat}/${observerLon}/${startTime}/${endTime}/&apiKey=${SAT_API_KEY}`;
+        const url = `${SATELLITE_POSITION_URL}/${satid}/${observerLat}/${observerLon}/${observerElevation}/${endTime}/&apiKey=${SAT_API_KEY}`;
         return axios.get(url);
       });
 
@@ -79,19 +79,24 @@ class WordMap extends React.Component {
   }
 
   track = (data) => {
-    const { duration } = this.props.settings;
+
+    if(!data[0].hasOwnProperty('positions')){
+      throw new Error('no position data');
+      return;
+    };
+
+    const { duration: [startTime, endTime] } = this.props.settings;
     const len = data[0].positions.length;
     const { trackContext } = this.state.map;
     let start = new Date();
-
-    let t = 0;
+    let t = startTime;
 
     // update track map every second
     let timer = setInterval( () => {
       let timePassed = Date.now() - start;
 
-      if (t === 0)
-        start.setSeconds(start.getSeconds() + duration[0] * 60);
+      if (t === startTime)
+        start.setSeconds(start.getSeconds() + startTime * 60);
 
       let now = new Date(start.getTime() + 60 * timePassed);
       trackContext.clearRect(0, 0, width, height);
@@ -116,6 +121,7 @@ class WordMap extends React.Component {
     }, 1000);
   }
 
+  // TODO
   drawSat(sat, pos){
     const name = sat.satname;
     const { projection, trackContext } = this.state.map;
